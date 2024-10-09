@@ -18,6 +18,7 @@ Enola AI is an advanced GenAI platform designed to validate and monitor the robu
 - [Contributing](#contributing)
 - [License](#license)
 - [Contact](#contact)
+- [Documentation](#documentation)
 
 ---
 
@@ -364,22 +365,7 @@ For any inquiries or support, please contact us at [help@huemulsolutions.com](ma
 
 ---
 
-## Additional Information
-
-- **API Reference**: For detailed documentation of all classes and methods, please refer to the [Enola AI SDK API Reference](docs/api_reference.md).
-- **Examples**: Additional examples can be found in the [examples](examples) directory.
-- **FAQ**: Frequently Asked Questions are answered in the [FAQ](docs/FAQ.md) section.
-
----
-
 ## Documentation
 
-For project documentation, please visit our [Enola AI Documentation](https://marceloxofh.github.io/preview-enola-doc/docs/).
+For complete project documentation, please visit our [Enola AI Documentation](https://marceloxofh.github.io/preview-enola-doc/docs/).
 
----
-
-## Suggestions and Next Steps
-
-- **Expand Examples**: As you become more familiar with the Enola AI SDK, consider exploring advanced topics like batch processing, error handling, and performance optimization.
-- **Integrate with Your Applications**: Leverage the Enola AI SDK to enhance observability and compliance in your AI applications.
-- **Provide Feedback**: Your feedback helps us improve. Please share your thoughts, suggestions, and experiences with us.
