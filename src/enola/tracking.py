@@ -391,7 +391,243 @@ class Tracking:
 
         self.step_list.append(step)
 
-    # Similar methods for close_step_video, close_step_audio, close_step_image, close_step_doc, close_step_others, close_step_score can be updated similarly.
+    def close_step_video(
+        self,
+        step: Step,
+        successfull: bool,
+        message_output: str = "",
+        video_num: int = 0,
+        video_sec: int = 0,
+        video_size: int = 0,
+        video_cost: float = 0,
+        enola_id_prev: str = "",
+        agent_deploy_id: str = "",
+        step_id: str = "",
+    ) -> None:
+        """
+        Closes a step with video information.
+
+        Args:
+            step (Step): The step to close.
+            successfull (bool): True if the step was successful, False otherwise.
+            message_output (str, optional): Message to user or to explain the execution results.
+            video_num (int, optional): Number of videos.
+            video_sec (int, optional): Number of video seconds.
+            video_size (int, optional): Video size.
+            video_cost (float, optional): Video cost.
+            enola_id_prev (str, optional): If this step was a call to another Enola agent, this is the ID of that agent.
+            agent_deploy_id (str, optional): Include this if you want to link this step to another agent of another company.
+            step_id (str, optional): ID of this step, you can use it to link with external calls.
+        """
+        step.enola_id_prev = enola_id_prev
+        step.agent_deploy_id = agent_deploy_id
+        step.step_id = step_id
+        step.message_output = message_output
+        step.step_type = StepType.VIDEO
+        step.video.num_videos = video_num
+        step.video.sec_videos = video_sec
+        step.video.size_videos = video_size
+        step.cost.videos = video_cost
+        step.date_end = self.hf.get_date_for_api()
+        step.duration_in_ms = self.hf.get_dif_ms(step.date_start, step.date_end)
+        step.successfull = successfull
+
+        self.step_list.append(step)
+
+    def close_step_audio(
+        self,
+        step: Step,
+        successfull: bool,
+        message_output: str = "",
+        audio_num: int = 0,
+        audio_sec: int = 0,
+        audio_size: int = 0,
+        audio_cost: float = 0,
+        enola_id_prev: str = "",
+        agent_deploy_id: str = "",
+        step_id: str = "",
+    ) -> None:
+        """
+        Closes a step with audio information.
+
+        Args:
+            step (Step): The step to close.
+            successfull (bool): True if the step was successful, False otherwise.
+            message_output (str, optional): Message to user or to explain the execution results.
+            audio_num (int, optional): Number of audio clips.
+            audio_sec (int, optional): Number of audio seconds.
+            audio_size (int, optional): Audio size.
+            audio_cost (float, optional): Audio cost.
+            enola_id_prev (str, optional): If this step was a call to another Enola agent, this is the ID of that agent.
+            agent_deploy_id (str, optional): Include this if you want to link this step to another agent of another company.
+            step_id (str, optional): ID of this step, you can use it to link with external calls.
+        """
+        step.enola_id_prev = enola_id_prev
+        step.agent_deploy_id = agent_deploy_id
+        step.step_id = step_id
+        step.message_output = message_output
+        step.step_type = StepType.AUDIO
+        step.audio.num_audio = audio_num
+        step.audio.sec_audio = audio_sec
+        step.audio.size_audio = audio_size
+        step.cost.audio = audio_cost
+        step.date_end = self.hf.get_date_for_api()
+        step.duration_in_ms = self.hf.get_dif_ms(step.date_start, step.date_end)
+        step.successfull = successfull
+
+        self.step_list.append(step)
+
+    def close_step_image(
+        self,
+        step: Step,
+        successfull: bool,
+        message_output: str = "",
+        image_num: int = 0,
+        image_size: int = 0,
+        image_cost: float = 0,
+        enola_id_prev: str = "",
+        agent_deploy_id: str = "",
+        step_id: str = "",
+    ) -> None:
+        """
+        Closes a step with image information.
+
+        Args:
+            step (Step): The step to close.
+            successfull (bool): True if the step was successful, False otherwise.
+            message_output (str, optional): Message to user or to explain the execution results.
+            image_num (int, optional): Number of images.
+            image_size (int, optional): Image size.
+            image_cost (float, optional): Image cost.
+            enola_id_prev (str, optional): If this step was a call to another Enola agent, this is the ID of that agent.
+            agent_deploy_id (str, optional): Include this if you want to link this step to another agent of another company.
+            step_id (str, optional): ID of this step, you can use it to link with external calls.
+        """
+        step.enola_id_prev = enola_id_prev
+        step.agent_deploy_id = agent_deploy_id
+        step.step_id = step_id
+        step.message_output = message_output
+        step.step_type = StepType.IMAGE
+        step.image.num_images = image_num
+        step.image.size_images = image_size
+        step.cost.images = image_cost
+        step.date_end = self.hf.get_date_for_api()
+        step.duration_in_ms = self.hf.get_dif_ms(step.date_start, step.date_end)
+        step.successfull = successfull
+
+        self.step_list.append(step)
+
+    def close_step_doc(
+        self,
+        step: Step,
+        successfull: bool,
+        message_output: str = "",
+        doc_num: int = 0,
+        doc_pages: int = 0,
+        doc_size: int = 0,
+        doc_char: int = 0,
+        doc_cost: float = 0,
+        enola_id_prev: str = "",
+        agent_deploy_id: str = "",
+        step_id: str = "",
+    ) -> None:
+        """
+        Closes a step with document information.
+
+        Args:
+            step (Step): The step to close.
+            successfull (bool): True if the step was successful, False otherwise.
+            message_output (str, optional): Message to user or to explain the execution results.
+            doc_num (int, optional): Number of documents.
+            doc_pages (int, optional): Number of pages in the document.
+            doc_size (int, optional): Document size.
+            doc_char (int, optional): Number of characters in the document.
+            doc_cost (float, optional): Document cost.
+            enola_id_prev (str, optional): If this step was a call to another Enola agent, this is the ID of that agent.
+            agent_deploy_id (str, optional): Include this if you want to link this step to another agent of another company.
+            step_id (str, optional): ID of this step, you can use it to link with external calls.
+        """
+        step.enola_id_prev = enola_id_prev
+        step.agent_deploy_id = agent_deploy_id
+        step.step_id = step_id
+        step.message_output = message_output
+        step.step_type = StepType.DOCUMENT
+        step.doc.num_docs = doc_num
+        step.doc.num_pages = doc_pages
+        step.doc.size_docs = doc_size
+        step.doc.num_char = doc_char
+        step.cost.docs = doc_cost
+        step.date_end = self.hf.get_date_for_api()
+        step.duration_in_ms = self.hf.get_dif_ms(step.date_start, step.date_end)
+        step.successfull = successfull
+
+        self.step_list.append(step)
+
+    def close_step_others(
+        self,
+        step: Step,
+        successfull: bool,
+        message_output: str = "",
+        others_cost: float = 0,
+        enola_id_prev: str = "",
+        agent_deploy_id: str = "",
+        step_id: str = "",
+    ) -> None:
+        """
+        Closes a step with other types of information.
+
+        Args:
+            step (Step): The step to close.
+            successfull (bool): True if the step was successful, False otherwise.
+            message_output (str, optional): Message to user or to explain the execution results.
+            others_cost (float, optional): Cost of other types.
+            enola_id_prev (str, optional): If this step was a call to another Enola agent, this is the ID of that agent.
+            agent_deploy_id (str, optional): Include this if you want to link this step to another agent of another company.
+            step_id (str, optional): ID of this step, you can use it to link with external calls.
+        """
+        step.enola_id_prev = enola_id_prev
+        step.agent_deploy_id = agent_deploy_id
+        step.step_id = step_id
+        step.message_output = message_output
+        step.step_type = StepType.OTHER
+        step.cost.others = others_cost
+        step.date_end = self.hf.get_date_for_api()
+        step.duration_in_ms = self.hf.get_dif_ms(step.date_start, step.date_end)
+        step.successfull = successfull
+
+        self.step_list.append(step)
+
+    def close_step_score(
+        self,
+        step: Step,
+        successfull: bool,
+        message_output: str = "",
+        others_cost: float = 0,
+        enola_id_prev: str = "",
+        agent_deploy_id: str = "",
+        step_id: str = "",
+    ) -> None:
+        """
+        Closes a step for score information.
+
+        Args:
+            step (Step): The step to close.
+            successfull (bool): True if the step was successful, False otherwise.
+            message_output (str, optional): Message to user or to explain the execution results.
+            others_cost (float, optional): Cost of other types.
+            enola_id_prev (str, optional): If this step was a call to another Enola agent, this is the ID of that agent.
+            agent_deploy_id (str, optional): Include this if you want to link this step to another agent of another company.
+            step_id (str, optional): ID of this step, you can use it to link with external calls.
+        """
+        step.enola_id_prev = enola_id_prev
+        step.agent_deploy_id = agent_deploy_id
+        step.step_id = step_id
+        step.message_output = message_output
+        step.step_type = StepType.SCORE
+        step.cost.others = others_cost
+        step.successfull = successfull
+
+        self.step_list.append(step)
 
     def __str__(self) -> str:
         return f"Agent/Model: {self.name}, Steps: {self.steps}"
