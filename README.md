@@ -15,10 +15,10 @@ Enola AI is an advanced GenAI platform designed to validate and monitor the robu
     - [Creating and Registering Steps](#creating-and-registering-steps)
     - [Closing Steps](#closing-steps)
     - [Finalizing and Sending Data to the Server](#finalizing-and-sending-data-to-the-server)
+- [Documentation](#documentation)
 - [Contributing](#contributing)
 - [License](#license)
 - [Contact](#contact)
-- [Documentation](#documentation)
 
 ---
 
@@ -340,6 +340,12 @@ monitor.execute(
 
 ---
 
+## Documentation
+
+For complete project documentation, please visit our [Enola AI Documentation](https://marceloxofh.github.io/preview-enola-doc/docs/).
+
+---
+
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request for any improvements or corrections.
@@ -363,9 +369,4 @@ This project is licensed under the **BSD 3-Clause License**. See the [LICENSE](L
 
 For any inquiries or support, please contact us at [help@huemulsolutions.com](mailto:help@huemulsolutions.com).
 
----
-
-## Documentation
-
-For complete project documentation, please visit our [Enola AI Documentation](https://marceloxofh.github.io/preview-enola-doc/docs/).
 

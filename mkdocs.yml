@@ -13,12 +13,15 @@ nav:
       - Enola Types: reference/enola_types.md
       - Evaluation: reference/evaluation.md
       - Get Executions: reference/get_executions.md
-      - Step: reference/step.md
       - Tracking: reference/tracking.md
       - Tracking Batch: reference/tracking_batch.md
 
 theme:
   name: 'material'
+  features:
+    - navigation.expand
+  navigation:
+    depth: 3
 
 plugins:
   - search
@@ -27,4 +30,5 @@ plugins:
         python:
           paths: ['src']
           setup_commands:
-            - "import sys; sys.path.append('C:/enola-1.3.5/src')"
+            - "import sys; sys.path.append('src')"
+          docstring_style: google  # Specify the docstring style

@@ -1,153 +1,219 @@
+from typing import Any, List, Optional
 import jwt
 from enola.base.common.huemul_functions import HuemulFunctions
 from enola.base.internal.evaluation.enola_evaluation import create_evaluation
 from enola.base.common.auth.auth_model import AuthModel
-from enola.enola_types import EnolaSenderModel, EvalType, EvaluationDetailModel, EvaluationModel, EvaluationResultModel, ResultLLM, ResultScore, TokenInfo
+from enola.enola_types import (
+    EnolaSenderModel,
+    EvalType,
+    EvaluationDetailModel,
+    EvaluationModel,
+    EvaluationResultModel,
+    ResultLLM,
+    ResultScore,
+    TokenInfo,
+)
 from enola.base.connect import Connect
 
 
 class Evaluation:
-    def __init__(self, token, eval_type: EvalType=EvalType.AUTO, result_score:ResultScore=None, result_llm:ResultLLM=None, app_id=None, user_id=None, session_id=None, channel_id=None, ip=None, app_name:str="", user_name:str="", session_name:str="", channel_name:str=""):
-        """
-        Start Evaluation Execution
+    """
+    The `Evaluation` class provides methods to evaluate executions in the Enola system.
 
-        token: jwt token, this is used to identify the agent, request from Admin App
-        eval_type: type of evaluation, AUTO (ML or AI evaluator), USER (final user), INTERNAL (internal expert)
-        result_score: reaactual results of score
-        result_llm: actual results of llm
-        app_id: id of app, this is used to identify the app who is calling
-        app_name: name of app, this is used to identify the app who is calling
-        user_id: id of external user, this is used to identify the user who is calling
-        user_name: name of external user, this is used to identify the user who is calling
-        session_id: id of session of user or application, this is used to identify the session who is calling
-        channel_id: web, chat, whatsapp, etc, this is used to identify the channel who is calling
-        channel_name: web, chat, whatsapp, etc, this is used to identify the channel who is calling
-        ip: ip of user or application, this is used to identify the ip who is calling
+    This class allows you to:
+
+    - Initialize an evaluation session.
+    - Add evaluations by value or level.
+    - Execute the evaluations and send the data to the Enola server.
+    """
+
+    def __init__(
+        self,
+        token: str,
+        eval_type: EvalType = EvalType.AUTO,
+        result_score: Optional[ResultScore] = None,
+        result_llm: Optional[ResultLLM] = None,
+        app_id: Optional[str] = None,
+        user_id: Optional[str] = None,
+        session_id: Optional[str] = None,
+        channel_id: Optional[str] = None,
+        ip: Optional[str] = None,
+        app_name: str = "",
+        user_name: str = "",
+        session_name: str = "",
+        channel_name: str = "",
+    ):
+        """
+        Initializes a new `Evaluation` instance.
+
+        Args:
+            token (str): JWT token, used to identify the agent.
+            eval_type (EvalType, optional): Type of evaluation (AUTO, USER, INTERNAL).
+            result_score (ResultScore, optional): Actual results of score.
+            result_llm (ResultLLM, optional): Actual results of LLM.
+            app_id (str, optional): ID of the app calling the evaluation.
+            user_id (str, optional): External user ID.
+            session_id (str, optional): Session ID of the user or application.
+            channel_id (str, optional): Communication channel ID.
+            ip (str, optional): IP address of the user or application.
+            app_name (str, optional): Name of the app.
+            user_name (str, optional): Name of the user.
+            session_name (str, optional): Name of the session.
+            channel_name (str, optional): Name of the channel.
         """
         self.hf = HuemulFunctions()
         self.eval_type = eval_type
         self.result_score = result_score
         self.result_llm = result_llm
 
-        #Connection data
-
-        #decodificar jwt
+        # Decode JWT token
         self.token_info = TokenInfo(token=token)
 
-        if (self.token_info.is_service_account == False):
-            raise Exception("This token is not a service account. Only service accounts can execute evaluations.")
+        if not self.token_info.is_service_account:
+            raise Exception(
+                "This token is not a service account. Only service accounts can execute evaluations."
+            )
 
-        if (self.token_info.is_service_account == True and self.token_info.service_account_can_evaluate == False):
+        if (
+            self.token_info.is_service_account
+            and not self.token_info.service_account_can_evaluate
+        ):
             raise Exception("Service Account can't evaluate")
 
+        self.connection = Connect(
+            AuthModel(
+                jwt_token=token,
+                url_service=self.token_info.service_account_url,
+                org_id=self.token_info.org_id,
+            )
+        )
 
-        self.connection = Connect(AuthModel(jwt_token=token, url_service=self.token_info.service_account_url, org_id=self.token_info.org_id))
-        
-
-        #user information
+        # User information
         self.enola_sender = EnolaSenderModel(
-            app_id=app_id, 
-            app_name=app_name, 
-            user_id=user_id, 
-            user_name=user_name, 
-            session_id=session_id, 
-            session_name=session_name, 
-            channel_id=channel_id, 
-            channel_name=channel_name, 
+            app_id=app_id,
+            app_name=app_name,
+            user_id=user_id,
+            user_name=user_name,
+            session_id=session_id,
+            session_name=session_name,
+            channel_id=channel_id,
+            channel_name=channel_name,
             batch_id="",
             client_id="",
             external_id="",
             product_id="",
-            ip=ip
-            )
+            ip=ip,
+        )
 
-        #current date
+        # Current date
         self.date_start = self.hf.get_date_for_api()
-        self.executions = []
-                
-        #save steps and informations
+        self.executions: List[EvaluationModel] = []
 
     ########################################################################################
     ###############    E V A L U A T I O N     M E T H O D S     ###########################
     ########################################################################################
 
-
-    def execution_exists(self, enola_id: str):
+    def execution_exists(self, enola_id: str) -> Optional[EvaluationModel]:
         """
-        Check if execution exists
-        enola_id: id of enola
+        Checks if an execution exists.
+
+        Args:
+            enola_id (str): ID of Enola execution.
+
+        Returns:
+            Optional[EvaluationModel]: The evaluation model if it exists, None otherwise.
         """
         for item in self.executions:
             if item.enola_id == enola_id:
                 return item
         return None
 
-    def add_evaluation(self, enola_id: str, eval_id: str, value: float, comment: str):
+    def add_evaluation(
+        self, enola_id: str, eval_id: str, value: float, comment: str
+    ) -> None:
         """
-        Add Evaluation by value
-        enola_id: id of enola
-        eval_id: id of evaluation
-        value: value of evaluation
-        comment: comment of evaluation
+        Adds an evaluation by value.
+
+        Args:
+            enola_id (str): ID of Enola execution.
+            eval_id (str): ID of evaluation.
+            value (float): Value of evaluation.
+            comment (str): Comment of evaluation.
         """
-
-        eval = EvaluationDetailModel(eval_id=eval_id, value=value, comment=comment)
-        #check if enola_id exists (append eval), if not, create new enola_id
-        execution = self.execution_exists(enola_id)
-
-
-        if (execution is None):
-            execution = EvaluationModel(enola_id, eval_type=self.eval_type, enola_sender = self.enola_sender, result_score=self.result_score, result_llm=self.result_llm)
-            self.executions.append(execution)
-        
-        execution.add_eval(eval)
-
-    def add_evaluation_by_level(self, enola_id: str, eval_id: str, level: int, comment: str):
-        """
-        Add Evaluation by level
-        enola_id: id of enola
-        eval_id: id of evaluation
-        level: 1 to 5
-        comment: comment of evaluation
-        """
-
-        eval = EvaluationDetailModel(eval_id=eval_id, level=level, comment=comment)
-        #check if enola_id exists (append eval), if not, create new enola_id
-        execution = self.execution_exists(enola_id)
-
-
-        if (execution is None):
-            execution = EvaluationModel(enola_id, eval_type=self.eval_type, enola_sender = self.enola_sender)
-            self.executions.append(execution)
-        
-        execution.add_eval(eval)
-
-    def execute(self):
-        """
-        Execute Evaluations
-        """
-        final_result: EvaluationResultModel = EvaluationResultModel(
-            total_evals=len(self.executions), 
-            total_errors=0, 
-            total_success=0, 
-            errors=[]
+        eval_detail = EvaluationDetailModel(
+            eval_id=eval_id, value=value, comment=comment
         )
-        
+        execution = self.execution_exists(enola_id)
+
+        if execution is None:
+            execution = EvaluationModel(
+                enola_id,
+                eval_type=self.eval_type,
+                enola_sender=self.enola_sender,
+                result_score=self.result_score,
+                result_llm=self.result_llm,
+            )
+            self.executions.append(execution)
+
+        execution.add_eval(eval_detail)
+
+    def add_evaluation_by_level(
+        self, enola_id: str, eval_id: str, level: int, comment: str
+    ) -> None:
+        """
+        Adds an evaluation by level.
+
+        Args:
+            enola_id (str): ID of Enola execution.
+            eval_id (str): ID of evaluation.
+            level (int): Level from 1 to 5.
+            comment (str): Comment of evaluation.
+        """
+        eval_detail = EvaluationDetailModel(
+            eval_id=eval_id, level=level, comment=comment
+        )
+        execution = self.execution_exists(enola_id)
+
+        if execution is None:
+            execution = EvaluationModel(
+                enola_id,
+                eval_type=self.eval_type,
+                enola_sender=self.enola_sender,
+            )
+            self.executions.append(execution)
+
+        execution.add_eval(eval_detail)
+
+    def execute(self) -> EvaluationResultModel:
+        """
+        Executes the evaluations.
+
+        Returns:
+            EvaluationResultModel: The result of the evaluations.
+        """
+        final_result = EvaluationResultModel(
+            total_evals=len(self.executions),
+            total_errors=0,
+            total_success=0,
+            errors=[],
+        )
+
         for item in self.executions:
-            result = create_evaluation(evaluation_model=item, connection=self.connection)
+            result = create_evaluation(
+                evaluation_model=item, connection=self.connection
+            )
             if not result.successfull:
                 print(result.errors)
                 print(result.message)
                 final_result.errors.append(result.message)
 
         return final_result
-    
-    def __getitem__(self, key):
+
+    def __getitem__(self, key: str) -> Any:
         return self.__dict__[key]
 
-    def __getattr__(self, key):
+    def __getattr__(self, key: str) -> Any:
         return self.__dict__[key]
 
-    def get(self, key, default=None):
+    def get(self, key: str, default: Optional[Any] = None) -> Any:
         return self.__dict__.get(key, default)
-
